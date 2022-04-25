@@ -1,23 +1,40 @@
 import { Input, Button, Flex, Text } from "@chakra-ui/react";
-import React, { ChangeEvent, useState } from "react";
+import React, { ChangeEvent, FormEvent, useState } from "react";
 import { useSetRecoilState } from "recoil";
+import { useCreateUserWithEmailAndPassword } from "react-firebase-hooks/auth";
 import { authModalState } from "../../../atoms/modalAtoms";
+import { auth } from "../../../lib/firebase";
+import { FIREBASE_ERRORS } from "../../../lib/firebase/errors";
 
 type Props = {};
 
 const Signup = (props: Props) => {
-  const [loginForm, setSignupForm] = useState({
+  const [signupForm, setSignupForm] = useState({
     email: "",
     password: "",
     confirmPassword: "",
   });
+  const [error, setError] = useState("");
   const setAuthModalState = useSetRecoilState(authModalState);
+  const [createUserWithEmailAndPassword, user, loading, authError] =
+    useCreateUserWithEmailAndPassword(auth);
 
   const handleOnChange = (ev: ChangeEvent<HTMLInputElement>) => {
     setSignupForm((prev) => ({ ...prev, [ev.target.name]: ev.target.value }));
   };
 
-  const handleSubmit = () => {};
+  const handleSubmit = (ev: FormEvent<HTMLFormElement>) => {
+    ev.preventDefault();
+
+    if (error) setError("");
+
+    if (signupForm.password !== signupForm.confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
+    createUserWithEmailAndPassword(signupForm.email, signupForm.password);
+  };
 
   return (
     <form onSubmit={handleSubmit}>
@@ -76,7 +93,14 @@ const Signup = (props: Props) => {
         bg="gray.50"
       />
 
-      <Button type="submit" width="100%" height={9} mb={2}>
+      {(error || authError) && (
+        <Text textAlign="center" color="red" mb={2} fontSize={12}>
+          {error ||
+            FIREBASE_ERRORS[authError?.message as keyof typeof FIREBASE_ERRORS]}
+        </Text>
+      )}
+
+      <Button type="submit" width="100%" isLoading={loading} height={9} mb={2}>
         Sign Up
       </Button>
       <Flex fontSize={14} justify="center">

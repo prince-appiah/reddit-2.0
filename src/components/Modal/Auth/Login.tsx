@@ -1,19 +1,30 @@
 import { Button, Flex, Input, Text } from "@chakra-ui/react";
-import { ChangeEvent, useState } from "react";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import error from "next/error";
+import { ChangeEvent, FormEvent, useState } from "react";
+import { useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
 import { useSetRecoilState } from "recoil";
 import { authModalState } from "../../../atoms/modalAtoms";
+import { auth } from "../../../lib/firebase";
+import { FIREBASE_ERRORS } from "../../../lib/firebase/errors";
 
 type Props = {};
 
 const Login = (props: Props) => {
   const [loginForm, setLoginForm] = useState({ email: "", password: "" });
   const setAuthModalState = useSetRecoilState(authModalState);
+  const [signinWithEmailAndPassword, user, loading, error] =
+    useSignInWithEmailAndPassword(auth);
 
   const handleOnChange = (ev: ChangeEvent<HTMLInputElement>) => {
     setLoginForm((prev) => ({ ...prev, [ev.target.name]: ev.target.value }));
   };
 
-  const handleSubmit = () => {};
+  const handleSubmit = (ev: FormEvent<HTMLFormElement>) => {
+    ev.preventDefault();
+
+    signinWithEmailAndPassword(loginForm.email, loginForm.password);
+  };
 
   return (
     <form onSubmit={handleSubmit}>
@@ -54,9 +65,30 @@ const Login = (props: Props) => {
         bg="gray.50"
       />
 
-      <Button type="submit" width="100%" height={9} mb={2}>
+      {error && (
+        <Text color="red" fontSize={12} my={3} textAlign="center">
+          {FIREBASE_ERRORS[error?.message as keyof typeof FIREBASE_ERRORS]}
+        </Text>
+      )}
+
+      <Button type="submit" width="100%" isLoading={loading} height={9} mb={2}>
         Log In
       </Button>
+
+      <Flex fontSize={14} justify="center" mb={3}>
+        <Text mr={2}>Forgot Your Password?</Text>
+        <Text
+          onClick={() =>
+            setAuthModalState((prev) => ({ ...prev, view: "resetPassword" }))
+          }
+          color="blue.500"
+          fontWeight={700}
+          cursor="pointer"
+        >
+          RESET
+        </Text>
+      </Flex>
+
       <Flex fontSize={14} justify="center">
         <Text mr={2}>New to Reddit?</Text>
         <Text
