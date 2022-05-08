@@ -17,7 +17,8 @@ import { FaRedditSquare } from "react-icons/fa";
 import { IoSparkles } from "react-icons/io5";
 import { MdOutlineLogin } from "react-icons/md";
 import { VscAccount } from "react-icons/vsc";
-import { useSetRecoilState } from "recoil";
+import { useResetRecoilState, useSetRecoilState } from "recoil";
+import { communityState } from "../../atoms/communityAtoms";
 import { authModalState } from "../../atoms/modalAtoms";
 import { auth } from "../../lib/firebase";
 
@@ -28,6 +29,13 @@ type Props = {
 const DropdownMenu = (props: Props) => {
   const { user } = props;
   const setModalState = useSetRecoilState(authModalState);
+  const resetCommunityState = useResetRecoilState(communityState);
+
+  const handleLogout = async () => {
+    await signOut(auth);
+    //clear state
+    resetCommunityState();
+  };
 
   return (
     <Menu>
@@ -98,7 +106,7 @@ const DropdownMenu = (props: Props) => {
               fontSize={14}
               fontWeight={700}
               _hover={{ bg: "blue.500", color: "white" }}
-              onClick={() => signOut(auth)}
+              onClick={handleLogout}
             >
               <Flex align="center">
                 <Icon fontSize={20} mr={2} as={MdOutlineLogin} />

@@ -9,19 +9,13 @@ const HomeLayout = (props: Props) => {
   const { children } = props;
 
   return (
-    <Flex justify="center" py={4} px={0} border="1px solid red">
-      <Flex
-        width="95%"
-        justify="center"
-        maxWidth={860}
-        border="1px solid green"
-      >
+    <Flex justify="center" py={4} px={0}>
+      <Flex width="95%" justify="center" maxWidth={860}>
         {/* Left content */}
         <Flex
           direction="column"
           width={{ base: "100%", md: "65%" }}
           mr={{ base: 0, md: 6 }}
-          border="1px solid orange"
         >
           {children && children[0]}
         </Flex>
@@ -31,7 +25,6 @@ const HomeLayout = (props: Props) => {
           direction="column"
           display={{ base: "none", md: "flex" }}
           flexGrow={1}
-          border="1px solid purple"
         >
           {children && children[1]}
         </Flex>

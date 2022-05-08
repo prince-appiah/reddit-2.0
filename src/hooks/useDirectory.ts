@@ -58,7 +58,12 @@ const useDirectory = () => {
       ...prev,
       selectedMenuItem: defaultMenuItem,
     }));
-  }, [router.query?.community, communityStateValue.visitedCommunities]);
+  }, [
+    router.query.community,
+    communityStateValue.visitedCommunities,
+    router.query,
+    setDirectoryState,
+  ]);
 
   return { directoryState, onSelectMenuItem, toggleMenuOpen };
 };

@@ -1,21 +1,6 @@
 import { atom } from "recoil";
 import { FieldValue, Timestamp } from "firebase/firestore";
-import { CommunitySnippet, ICommunity } from "../typings";
-
-interface CommunityState {
-  [key: string]:
-    | CommunitySnippet[]
-    | { [key: string]: ICommunity }
-    | ICommunity
-    | boolean
-    | undefined;
-  mySnippets: CommunitySnippet[];
-  initSnippetsFetched: boolean;
-  visitedCommunities: {
-    [key: string]: ICommunity;
-  };
-  currentCommunity: ICommunity;
-}
+import { CommunitySnippet, ICommunity, ICommunityState } from "../typings";
 
 const defaultCommunity: ICommunity = {
   id: "",
@@ -24,14 +9,14 @@ const defaultCommunity: ICommunity = {
   privacyType: "public",
 };
 
-export const defaultCommunityState: CommunityState = {
+export const defaultCommunityState: ICommunityState = {
   mySnippets: [],
   initSnippetsFetched: false,
   visitedCommunities: {},
   currentCommunity: defaultCommunity,
 };
 
-export const communityState = atom<CommunityState>({
+export const communityState = atom<ICommunityState>({
   key: "communitiesState",
   default: defaultCommunityState,
 });
