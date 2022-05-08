@@ -11,7 +11,7 @@
 
 
 ## Live Preview
-https://netflix-2-0-self.vercel.app/
+https://reddit-2-0.vercel.app/
 
  
 
@@ -39,7 +39,7 @@ https://netflix-2-0-self.vercel.app/
 
 ## Environment Variables
 
-To run this project, you will need to add the following environment variables to your .env.local file
+To run this project locally, you will need to add the following environment variables to your .env.local file
 
 `NEXT_PUBLIC_FIREBASE_API_KEY` 
 
