@@ -1,18 +1,17 @@
-import { Flex } from "@chakra-ui/react";
 import { doc, getDoc } from "firebase/firestore";
 import { GetServerSidePropsContext } from "next";
-import safeJsonStringify from "safe-json-stringify";
 import React, { useEffect } from "react";
+import { useSetRecoilState } from "recoil";
+import safeJsonStringify from "safe-json-stringify";
+import { communityState } from "../../../atoms/communityAtoms";
+import About from "../../../components/Community/About";
+import CreatePost from "../../../components/Community/CreatePost";
+import CommunityHeader from "../../../components/Community/Header";
+import NotFound from "../../../components/Community/NotFound";
+import HomeLayout from "../../../components/layouts/HomeLayout";
+import PostsList from "../../../components/Post/PostsList";
 import { firestore } from "../../../lib/firebase";
 import { ICommunity } from "../../../typings";
-import NotFound from "../../../components/Community/NotFound";
-import CommunityHeader from "../../../components/Community/Header";
-import HomeLayout from "../../../components/layouts/HomeLayout";
-import CreatePost from "../../../components/Community/CreatePost";
-import PostsList from "../../../components/Post/PostsList";
-import About from "../../../components/Community/About";
-import { useSetRecoilState } from "recoil";
-import { communityState } from "../../../atoms/communityAtoms";
 
 type Props = {
   communityData: ICommunity;
@@ -30,7 +29,7 @@ const CommunityPage = (props: Props) => {
       }));
       return;
     }
-  }, [communityData]);
+  }, [communityData, setCommunityState]);
 
   if (!communityData) {
     return <NotFound />;

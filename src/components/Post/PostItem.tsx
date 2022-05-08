@@ -30,8 +30,13 @@ import { IPost } from "../../typings";
 type Props = {
   post: IPost;
   userIsCreator: boolean;
-  userVoteValue?: number;
-  onVote: () => {};
+  userVoteValue: number;
+  onVote: (
+    event: React.MouseEvent<SVGElement, MouseEvent>,
+    post: IPost,
+    vote: number,
+    comunity_id: string
+  ) => void;
   onDeletePost: (post: IPost) => Promise<boolean>;
   onSelectPost: () => {};
 };
@@ -88,19 +93,19 @@ const PostItem = ({
           }
           color={userVoteValue === 1 ? "brand.100" : "gray.400"}
           fontSize={30}
-          onClick={onVote}
+          onClick={(ev) => onVote(ev, post, 1, post.communityId)}
           cursor="pointer"
         />
         <Text fontSize={13}>{post.voteStatus}</Text>
         <Icon
           as={
-            userVoteValue === -1
+            userVoteValue == -1
               ? IoArrowDownCircleSharp
               : IoArrowDownCircleOutline
           }
           color={userVoteValue === -1 ? "#4379ff" : "gray.400"}
           fontSize={30}
-          onClick={onVote}
+          onClick={(ev) => onVote(ev, post, -1, post.communityId)}
           cursor="pointer"
         />
       </Flex>

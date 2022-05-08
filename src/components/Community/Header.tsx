@@ -10,13 +10,9 @@ type Props = {
 
 const CommunityHeader = (props: Props) => {
   const { community } = props;
-  const {
-    communityData,
-    joinCommunity,
-    leaveCommunity,
-    loading,
-    handleJoinOrJoinCommunity,
-  } = useCommunityData();
+  const { communityData, loading, handleJoinOrJoinCommunity } =
+    useCommunityData();
+
   const isJoined = !!communityData.mySnippets.find(
     (item) => item.communityId === community.id
   );
@@ -26,8 +22,17 @@ const CommunityHeader = (props: Props) => {
       <Box height="50%" bg="blue.400" />
       <Flex justify="center" bg="white" flexGrow={1}>
         <Flex width="95%" maxWidth={860}>
-          {community.imageURL ? (
-            <Image src="" alt={community.id} />
+          {communityData.currentCommunity.imageURL ? (
+            <Image
+              src={communityData.currentCommunity.imageURL}
+              alt={communityData.currentCommunity.privacyType}
+              borderRadius="full"
+              position="relative"
+              boxSize={16}
+              border="4px solid white"
+              top={-5}
+              color="blue.400"
+            />
           ) : (
             <Icon
               as={FaReddit}

@@ -42,7 +42,10 @@ const useCommunityData = () => {
   }, [setCommunityData, user?.uid]);
 
   useEffect(() => {
-    if (!user) return;
+    if (!user) {
+      setCommunityData((prev) => ({ ...prev, mySnippets: [] }));
+      return;
+    }
     getSnippets();
   }, [getSnippets, user]);
 

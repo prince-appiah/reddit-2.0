@@ -1,29 +1,31 @@
-import React, { useRef, useState } from "react";
 import {
   Box,
   Button,
   Divider,
   Flex,
   Icon,
+  Image,
   Skeleton,
   SkeletonCircle,
+  Spinner,
   Stack,
   Text,
-  Image,
-  Spinner,
 } from "@chakra-ui/react";
-import { HiOutlineDotsHorizontal } from "react-icons/hi";
-import { RiCakeLine } from "react-icons/ri";
+import { doc, updateDoc } from "firebase/firestore";
+import { getDownloadURL, ref, uploadString } from "firebase/storage";
+import moment from "moment";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import React, { useRef, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
-import moment from "moment";
-import { useRecoilValue } from "recoil";
 import { FaReddit } from "react-icons/fa";
-import { getDownloadURL, ref, uploadString } from "firebase/storage";
-import { doc, updateDoc } from "firebase/firestore";
-import { ICommunity } from "../../typings";
+import { HiOutlineDotsHorizontal } from "react-icons/hi";
+import { RiCakeLine } from "react-icons/ri";
+import { useSetRecoilState } from "recoil";
+import { communityState } from "../../atoms/communityAtoms";
+import useFileUpload from "../../hooks/useFileUpload";
 import { auth, firestore, storage } from "../../lib/firebase";
+import { ICommunity } from "../../typings";
 
 type AboutProps = {
   communityData: ICommunity;
@@ -32,32 +34,13 @@ type AboutProps = {
   loading?: boolean;
 };
 
-const About: React.FC<AboutProps> = ({
-  communityData,
-  pt,
-  onCreatePage,
-  loading,
-}) => {
+const About = ({ communityData, pt, onCreatePage, loading }: AboutProps) => {
   const [user] = useAuthState(auth); // will revisit how 'auth' state is passed
   const router = useRouter();
   const selectFileRef = useRef<HTMLInputElement>(null);
-  const [selectedFile, setSelectedFile] = useState<string>();
-
-  // Added last!
+  const { onSelectFile, selectedFile, setSelectedFile } = useFileUpload();
   const [imageLoading, setImageLoading] = useState(false);
-
-  const onSelectImage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const reader = new FileReader();
-    if (event.target.files?.[0]) {
-      reader.readAsDataURL(event.target.files[0]);
-    }
-
-    reader.onload = (readerEvent) => {
-      if (readerEvent.target?.result) {
-        setSelectedFile(readerEvent.target?.result as string);
-      }
-    };
-  };
+  const setCommunityState = useSetRecoilState(communityState);
 
   const updateImage = async () => {
     if (!selectedFile) return;
@@ -69,7 +52,11 @@ const About: React.FC<AboutProps> = ({
       await updateDoc(doc(firestore, "communities", communityData.id), {
         imageURL: downloadURL,
       });
-      console.log("HERE IS DOWNLOAD URL", downloadURL);
+
+      setCommunityState((prev) => ({
+        ...prev,
+        currentCommunity: { ...prev.currentCommunity, imageURL: downloadURL },
+      }));
     } catch (error: any) {
       console.log("updateImage error", error.message);
     }
@@ -84,7 +71,7 @@ const About: React.FC<AboutProps> = ({
         align="center"
         p={3}
         color="white"
-        bg="blue.400"
+        bg="blue.500"
         borderRadius="4px 4px 0px 0px"
       >
         <Text fontSize={13} fontWeight={700}>
@@ -150,7 +137,9 @@ const About: React.FC<AboutProps> = ({
                 )}
               </Flex>
               {!onCreatePage && (
-                <Link href={`/r/${router.query.community_id}/submit`}>
+                // <Link href={`/r/${router.query.community_id}/submit`}>
+                // eslint-disable-next-line @next/next/link-passhref
+                <Link href={`/r/${communityData.id}/submit`}>
                   <Button mt={3} height="30px">
                     Create Post
                   </Button>
@@ -160,7 +149,7 @@ const About: React.FC<AboutProps> = ({
               {user?.uid === communityData?.creatorId && (
                 <>
                   <Divider />
-                  <Stack fontSize="10pt" spacing={1}>
+                  <Stack fontSize={13} spacing={1}>
                     <Text fontWeight={600}>Admin</Text>
                     <Flex align="center" justify="space-between">
                       <Text
@@ -176,7 +165,7 @@ const About: React.FC<AboutProps> = ({
                           borderRadius="full"
                           boxSize="40px"
                           src={selectedFile || communityData?.imageURL}
-                          alt="Dan Abramov"
+                          alt={communityData?.privacyType}
                         />
                       ) : (
                         <Icon
@@ -201,7 +190,7 @@ const About: React.FC<AboutProps> = ({
                       accept="image/x-png,image/gif,image/jpeg"
                       hidden
                       ref={selectFileRef}
-                      onChange={onSelectImage}
+                      onChange={onSelectFile}
                     />
                   </Stack>
                 </>

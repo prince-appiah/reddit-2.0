@@ -64,6 +64,10 @@ const PostsList = ({ communityData, userId }: Props) => {
               onDeletePost={handleDeletePost}
               onSelectPost={handleSelectPost}
               onVote={handleVote}
+              userVoteValue={
+                postsState.postVotes.find((vote) => vote.postId === post.id!)
+                  ?.voteValue as number
+              }
               userIsCreator={user?.uid === post.creatorId}
             />
           ))}

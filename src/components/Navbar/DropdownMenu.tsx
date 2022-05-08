@@ -29,12 +29,11 @@ type Props = {
 const DropdownMenu = (props: Props) => {
   const { user } = props;
   const setModalState = useSetRecoilState(authModalState);
-  const resetCommunityState = useResetRecoilState(communityState);
 
   const handleLogout = async () => {
     await signOut(auth);
     //clear state
-    resetCommunityState();
+    // resetCommunityState();
   };
 
   return (
