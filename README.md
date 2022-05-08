@@ -20,6 +20,8 @@ https://netflix-2-0-self.vercel.app/
 - [x]  Email/password and Google sign-in functionality (provided by firebase authentication)
 - [x]  Reset Password
 - [x]  Create Communities
+- [x]  Join and leave communities
+- [x]  Update community profile picture
 - [ ]  Upvote/Downvote posts
 - [x]  Delete posts
 - [ ]  Create comments
