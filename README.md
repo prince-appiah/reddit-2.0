@@ -6,12 +6,14 @@
 
 ## Screenshots
 
-![App Screenshot]()
+![App Screenshot](https://raw.githubusercontent.com/prince-appiah/oris-portfolio/master/src/screenshots/reddit-communities.png)
+
+![App Screenshot](https://raw.githubusercontent.com/prince-appiah/oris-portfolio/master/src/screenshots/reddit-create.png)
 
 
 
 ## Live Preview
-https://netflix-2-0-self.vercel.app/
+https://reddit-2-0.vercel.app/
 
  
 
@@ -20,7 +22,7 @@ https://netflix-2-0-self.vercel.app/
 - [x]  Email/password and Google sign-in functionality (provided by firebase authentication)
 - [x]  Reset Password
 - [x]  Create Communities
-- [ ]  Upvote/Downvote posts
+- [x]  Upvote/Downvote posts
 - [x]  Delete posts
 - [ ]  Create comments
 
@@ -34,14 +36,7 @@ https://netflix-2-0-self.vercel.app/
 - Recoil
 
 
-
-## Environment Variables
-
-To run this project, you will need to add the following environment variables to your .env.local file
-
-`NEXT_PUBLIC_FIREBASE_API_KEY` 
-
-
+ 
 
 ## Run Locally
 
