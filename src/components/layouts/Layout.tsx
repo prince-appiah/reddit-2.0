@@ -1,9 +1,11 @@
-import { FC } from "react";
+import { FC, ReactNode } from "react";
 import Navbar from "../Navbar";
 
-type LayoutProps = {};
+type LayoutProps = {
+  children: ReactNode;
+};
 
-const Layout = ({ children }) => {
+const Layout = ({ children }: LayoutProps) => {
   return (
     <>
       {/* navbar */}
