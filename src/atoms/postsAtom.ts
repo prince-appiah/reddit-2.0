@@ -1,18 +1,8 @@
 import { atom } from "recoil";
 import { Timestamp } from "firebase/firestore";
-import { IPost, IPostVote } from "../typings";
+import { IPost, IPostState, IPostVote } from "../typings";
 
-interface PostState {
-  selectedPost: IPost | null;
-  posts: IPost[];
-  postVotes: IPostVote[];
-  postsCache: {
-    [key: string]: IPost[];
-  };
-  postUpdateRequired: boolean;
-}
-
-const defaultPostState: PostState = {
+const defaultPostState: IPostState = {
   selectedPost: null,
   posts: [],
   postVotes: [],
@@ -20,7 +10,7 @@ const defaultPostState: PostState = {
   postUpdateRequired: true,
 };
 
-export const postState = atom<PostState>({
+export const postState = atom<IPostState>({
   key: "postState",
   default: defaultPostState,
 });
