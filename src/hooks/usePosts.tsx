@@ -8,6 +8,7 @@ import {
   writeBatch,
 } from "firebase/firestore";
 import { deleteObject, ref } from "firebase/storage";
+import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
@@ -20,6 +21,7 @@ import { IPost, IPostVote } from "../typings";
 const usePosts = () => {
   const [postsState, setPostsState] = useRecoilState(postState);
   const [user, loadingUser] = useAuthState(auth);
+  const router = useRouter();
   const setAuthModalState = useSetRecoilState(authModalState);
   const currentCommunity = useRecoilValue(communityState).currentCommunity;
 
@@ -105,28 +107,50 @@ const usePosts = () => {
         }
       }
 
-      // let updatedState={...postsState};
+      let updatedState = { ...postsState, postVotes: updatedPostVotes };
+
+      const postIndex = postsState.posts.findIndex(
+        (item) => item.id === post.id
+      );
+
+      if (postsState.selectedPost) {
+        setPostsState((prev) => ({ ...prev, selectedPost: updatedPost }));
+      }
+
+      // if (!postIndex !== undefined) {
+      updatedPosts[postIndex!] = updatedPost;
+
+      updatedState = {
+        ...updatedState,
+        posts: updatedPosts,
+        postsCache: {
+          ...updatedState.postsCache,
+          [comunity_id]: updatedPosts,
+        },
+      };
+      // }
+
+      // if (updatedState.selectedPost) {
+      //   updatedState = { ...updatedState, selectedPost: updatedPost };
+      // }
+
+      // update state
+      setPostsState(updatedState);
+
       // update post doc in db
       const postRef = doc(firestore, `posts/${post.id!}`);
       batch.update(postRef, { voteStatus: post.voteStatus + voteChange });
-      await batch.commit();
 
-      // update state
-      const postIndex = postsState.posts.findIndex(
-        (item) => (item.id = post.id)
-      );
-      updatedPosts[postIndex] = updatedPost;
-      setPostsState((prev) => ({
-        ...prev,
-        posts: updatedPosts,
-        postVotes: updatedPostVotes,
-      }));
+      await batch.commit();
     } catch (error) {
       console.log("🚀 ~ error", error);
     }
   };
 
-  const handleSelectPost = async () => {};
+  const handleSelectPost = async (post: IPost) => {
+    setPostsState((prev) => ({ ...prev, selectedPost: post }));
+    router.push(`/r/${post.communityId}/comments/${post.id}`);
+  };
 
   const handleDeletePost = async (post: IPost): Promise<boolean> => {
     try {
@@ -166,7 +190,9 @@ const usePosts = () => {
         ...prev,
         postVotes: postVotes as IPostVote[],
       }));
-    } catch (error) {}
+    } catch (error) {
+      console.log("🚀 ~ error", error);
+    }
   };
 
   useEffect(() => {

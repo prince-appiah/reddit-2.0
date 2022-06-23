@@ -11,7 +11,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import moment from "moment";
-import { NextRouter } from "next/router";
+import { NextRouter, useRouter } from "next/router";
 import { AiOutlineDelete } from "react-icons/ai";
 import { BsChat, BsDot } from "react-icons/bs";
 import { FaReddit } from "react-icons/fa";
@@ -38,7 +38,7 @@ type Props = {
     comunity_id: string
   ) => void;
   onDeletePost: (post: IPost) => Promise<boolean>;
-  onSelectPost: () => {};
+  onSelectPost?: (post: IPost) => void;
 };
 
 const PostItem = ({
@@ -52,8 +52,13 @@ const PostItem = ({
   const [loadingImage, setLoadingImage] = useState(true);
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState("");
+  const singlePostPage = !onSelectPost;
+  const router = useRouter();
 
-  const handleDelete = async () => {
+  const handleDelete = async (
+    event: React.MouseEvent<SVGElement, MouseEvent>
+  ) => {
+    event.stopPropagation();
     try {
       setIsDeleting(true);
       const response = await onDeletePost(post);
@@ -61,6 +66,10 @@ const PostItem = ({
       if (!response) {
         throw new Error("Could not delete post");
       }
+      if (singlePostPage) {
+        router.push(`/r/${post.communityId}`);
+      }
+
       setIsDeleting(false);
     } catch (error: any) {
       setIsDeleting(false);
@@ -71,21 +80,21 @@ const PostItem = ({
 
   return (
     <Flex
-      onClick={onSelectPost}
+      onClick={() => onSelectPost && onSelectPost(post)}
       border="1px solid"
       bg="white"
-      borderColor="gray"
-      borderRadius={4}
-      cursor="pointer"
-      _hover={{ borderColor: "gray.500" }}
+      borderColor={singlePostPage ? "white" : "gray.300"}
+      borderRadius={singlePostPage ? "4px 4px 0px 0px" : 4}
+      cursor={singlePostPage ? "unset" : "pointer"}
+      _hover={{ borderColor: singlePostPage ? "none" : "gray.500" }}
     >
       <Flex
         direction="column"
         align="center"
-        bg="gray.100"
+        bg={singlePostPage ? "none" : "gray.100"}
         p={2}
         width={10}
-        borderRadius={4}
+        borderRadius={singlePostPage ? 0 : "3px 0px 0px 3px"}
       >
         <Icon
           as={
@@ -191,7 +200,7 @@ const PostItem = ({
               px={3}
               borderRadius={4}
               _hover={{ bg: "gray.200" }}
-              onClick={() => handleDelete()}
+              onClick={(event: any) => handleDelete(event)}
             >
               {isDeleting ? (
                 <Spinner size="sm" />

@@ -1,10 +1,12 @@
 import {
   collection,
   doc,
+  getDoc,
   getDocs,
   increment,
   writeBatch,
 } from "firebase/firestore";
+import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useRecoilState, useSetRecoilState } from "recoil";
@@ -17,6 +19,7 @@ const useCommunityData = () => {
   const [communityData, setCommunityData] = useRecoilState(communityState);
   const [user] = useAuthState(auth);
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
   const [error, setError] = useState("");
   const setAuthModal = useSetRecoilState(authModalState);
 
@@ -48,6 +51,26 @@ const useCommunityData = () => {
     }
     getSnippets();
   }, [getSnippets, user]);
+
+  const getCommunityData = async (community_id: string) => {
+    try {
+      const commDocRef = doc(firestore, `commnunites/${community_id}`);
+      const commRef = await getDoc(commDocRef);
+
+      setCommunityData((prev) => ({
+        ...prev,
+        currentCommunity: { id: commRef.id, ...commRef.data() } as ICommunity,
+      }));
+    } catch (error) {
+      console.log("🚀 ~ error", error);
+    }
+  };
+
+  useEffect(() => {
+    if (router.query.community_id || !communityData.currentCommunity) {
+      getCommunityData(router.query.community_id as string);
+    }
+  }, [router.query, communityData.currentCommunity]);
 
   const handleJoinOrJoinCommunity = (
     community: ICommunity,
@@ -138,6 +161,7 @@ const useCommunityData = () => {
     leaveCommunity,
     handleJoinOrJoinCommunity,
     getSnippets,
+    getCommunityData,
   };
 };
 

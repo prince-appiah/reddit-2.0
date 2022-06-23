@@ -15,6 +15,15 @@ export interface ICommunityState {
   currentCommunity: ICommunity;
 }
 
+export interface IPostState {
+  selectedPost: IPost | null;
+  posts: IPost[];
+  postVotes: IPostVote[];
+  postsCache: {
+    [key: string]: IPost[];
+  };
+  postUpdateRequired: boolean;
+}
 export interface ICommunity {
   id: string;
   creatorId: string;
